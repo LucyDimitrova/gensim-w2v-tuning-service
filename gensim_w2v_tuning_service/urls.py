@@ -13,9 +13,20 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
-from django.contrib import admin
-from django.urls import path
+from django.urls import path, include
+
+from tuner.views import (
+    IterationCreateApi,
+    IterationStartApi,
+    PerformanceGetApi
+)
+
+tuner_patterns = [
+    path('iteration/create', IterationCreateApi.as_view(), name='create'),
+    path('iteration/start/<int:iteration_id>', IterationStartApi.as_view(), name='start'),
+    path('iteration/performance/<int:iteration_id>', PerformanceGetApi.as_view(), name='performance')
+]
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
+    path('tune/', include((tuner_patterns, 'tune')))
 ]
