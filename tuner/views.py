@@ -37,7 +37,10 @@ class IterationStartApi(APIView):
             iteration = get_iteration(iteration_id)
             start_iteration(iteration)
             models = get_models(iteration)
-            # todo spawn a process for each model
+            # todo
+            # spawn a process for each model
+            # update iteration finish time after the last process is done
+            return Response({"success": True, "message": "Iteration started successfully."})
         except ObjectDoesNotExist:
             return Response({"success": False, "message": "Iteration with such id does not exist."})
 
