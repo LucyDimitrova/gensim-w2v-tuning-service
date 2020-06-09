@@ -1,6 +1,7 @@
 from django.core.exceptions import ObjectDoesNotExist
+import datetime
 
-from tuner.models import Iteration, Param, Performance
+from tuner.models import Iteration, ParamValue, Performance, Model
 
 
 def create_iteration(config: str) -> Iteration:
@@ -9,18 +10,25 @@ def create_iteration(config: str) -> Iteration:
     return iteration
 
 
-def get_iteration(iter_id: str) -> Iteration or None:
-    try:
-        iteration = Iteration.objects.get(pk=iter_id)
-        return iteration
-    except ObjectDoesNotExist:
-        return None
+def get_iteration(iter_id: str) -> Iteration:
+    iteration = Iteration.objects.get(pk=iter_id)
+    return iteration
 
 
-def create_param(name: str, value: str, iteration: Iteration) -> Param:
-    param = Param(param=name, config=value, iteration=iteration)
+def start_iteration(iteration: Iteration) -> None:
+    iteration.startedAt = datetime.datetime.now()
+    iteration.save()
+
+
+def create_param_value(param: str, value: str, model: Model) -> ParamValue:
+    param = ParamValue(param=param, value=value, model=model)
     param.save()
     return param
+
+
+def get_values_by_model(model: Model):
+    values = ParamValue.objects.filter(model=model)
+    return values
 
 
 def get_performance(iteration: Iteration) -> Performance:
@@ -30,3 +38,13 @@ def get_performance(iteration: Iteration) -> Performance:
     except ObjectDoesNotExist:
         return None
 
+
+def create_model(iteration: Iteration) -> Model:
+    model = Model(iteration=iteration)
+    model.save()
+    return model
+
+
+def get_models(iteration: Iteration):
+    models = Model.objects.filter(iteration=iteration)
+    return models
